@@ -1,11 +1,73 @@
-﻿@{
+﻿@using WebApp.ViewModels
+@model ProjectsViewModel
+
+
+@{
     ViewData["Title"] = "Projects";
 }
 
-<partial name="Partials/Components/Sections/_AddProjectForm" />
-<partial name="Partials/Components/Sections/_EditProjectForm" />
+@await Html.PartialAsync("Partials/Components/Sections/_AddProjectForm", Model.AddForm)
+@await Html.PartialAsync("Partials/Components/Sections/_EditProjectForm", Model.EditForm)
 
-<div class="page-header">
-	<h1>@ViewData["Title"]</h1>
-	<button type="button" data-modal="true" data-target="#addProjectModal" class="btn btn-add btn-blue">Add Project</button>
-</div>
+<section>
+
+	<div class="page-header">
+		<h1>@ViewData["Title"]</h1>
+		<button type="button" data-modal="true" data-target="#addProjectModal" class="btn btn-add btn-blue">Add Project</button>
+	</div>
+
+    <div class="project-status-tabs">
+        <span class="status-tab active">ALL [1]</span>
+        <span class="status-tab">STARTED [1]</span>
+        <span class="status-tab">COMPLETED [0]</span>
+    </div>
+
+	<div class="project-list">
+
+		@if (Model != null)
+		{
+			@foreach (var project in Model.Projects)
+			{
+                <div class="card project" data-project-id="@project.Id">
+                    <div class="card-header">
+                        <div class="project-image">
+                            <img src="~/images/avatar.svg" />
+                        </div>
+					<h6 class="project-name">@project.ProjectName</h6>
+					<div class="client-name">@project.ClientName</div>
+
+                        <div id="project-actions-container">
+                            <button type="button" data-type="dropdown" data-target="#project-dropdown-@project.Id" class="btn-actions">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+
+                            <div id="project-dropdown-@project.Id" class="dropdown">
+                                <div class="dropdown-body">
+                                    <nav class="dropdown-actions">
+                                        <button type="button" class="dropdown-action edit" data-id="@project.Id" data-modal="true" data-target="#editProjectModal">
+                                            <i class="fa-duotone fa-solid fa-pen-to-square"></i>
+                                            <span>Edit</span>
+                                        </button>
+                                    </nav>
+                                    <div class="divider"></div>
+                                        <nav class="dropdown-actions">
+                                           <button class="dropdown-action remove" data-id="@project.Id">
+                                            <i class="fa-duotone fa-solid fa-trash"></i>
+                                            <span>Delete Project</span>
+                                           </button>
+                                        </nav>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p>@Html.Raw(project.Description)</p>
+                    </div>
+				</div>
+			}
+		}
+
+	</div>
+</section>

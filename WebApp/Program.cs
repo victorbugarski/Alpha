@@ -1,3 +1,4 @@
+using Businesses.Interfaces;
 using Businesses.Services;
 using Data.Contexts;
 using Data.Entities;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AlphaDB")));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 builder.Services.AddIdentity<MemberEntity, IdentityRole>(options =>
 {

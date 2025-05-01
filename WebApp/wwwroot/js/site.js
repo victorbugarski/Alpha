@@ -53,9 +53,10 @@
     })
 
     //handle submit forms
-    const form = document.querySelector('#modalForm');
+    const form = document.querySelectorAll('#modalForm');
 
-    if (form) {
+    forms.forEach(form => {
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -93,7 +94,8 @@
                 console.log('error submitting the form', err);
             }
         });
-    }
+    })
+    
 
 
     })
@@ -171,5 +173,60 @@ document.addEventListener('click', function (event) {
     }
 })
 
+//CHAT GPT
+//Denna koden lyssnar efter ett klick på en knapp som har klassen dropdown-action och remove på sig. Genom att köra closest så letar den bara efter den närmsta knappen och söker efter data-id. När den gjort det så kommer en pop up ruta upp för att säkerställa att man vill ta bort. En post förfrågan skickas vidare och triggar igång delete metoden i min ProjectsController med hjälp utav ProjectService.
+
+
+//delete
+document.querySelectorAll('.dropdown-action.remove').forEach(button => {
+    button.addEventListener('click', async (e) => {
+        const projectId = e.target.closest('button').getAttribute('data-id');
+
+        if (confirm('Are you sure you want to delete?')) {
+            const res = await fetch(`/Projects/Delete/${projectId}`, {
+                method: 'POST'
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                window.location.reload();
+            } else {
+                alert('Failed to delete.');
+            }
+        }
+    });
+});
+
+//update
+
+document.querySelectorAll('.dropdown-action.edit').forEach(button => {
+    button.addEventListener('click', async (e) => {
+        const projectId = e.target.closest('button').getAttribute('data-id');
+        const modal = document.querySelector('#editProjectModal');
+        const form = modal.querySelector('#modalForm');
+
+        try {
+            const res = await fetch(`/Projects/GetProject/${projectId}`);
+            const data = await res.json();
+
+            if (res.ok && data) {
+                form.querySelector('[name="Id"]').value = data.id;
+                form.querySelector('[name="ProjectName"]').value = data.projectName;
+                form.querySelector('[name="ClientName"]').value = data.clientName;
+                form.querySelector('[name="Description"]').value = data.description;
+                form.querySelector('[name="StartDate"]').value = data.startDate;
+                form.querySelector('[name="EndDate"]').value = data.endDate;
+                form.querySelector('[name="Budget"]').value = data.budget;
+
+                modal.style.display = 'flex';
+            } else {
+                alert("Could not load project");
+            }
+        } catch (err) {
+            console.error("Failed to load project:", err);
+        }
+    });
+});
 
 

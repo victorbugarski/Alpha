@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using Businesses.Interfaces;
 using Businesses.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +9,10 @@ namespace WebApp.Controllers;
 [Authorize]
 
 
-public class AdminController(IMemberService memberService) : Controller
+public class AdminController(IMemberService memberService, IProjectService projectService) : Controller
 {
     private readonly IMemberService _memberService = memberService;
+    private readonly IProjectService _projectService = projectService;
 
     public IActionResult Index()
     {
@@ -19,9 +20,15 @@ public class AdminController(IMemberService memberService) : Controller
     }
 
     [Route("projects")]
-    public IActionResult Projects()
+    public async Task<IActionResult> Projects()
     {
-        return View();
+        var projects = await _projectService.GetAllProjects();
+
+        var viewModel = new ProjectsViewModel
+        {
+            Projects = await _projectService.GetAllProjects()
+        };
+        return View(viewModel);
     }
 
     [Route("members")]
